@@ -59,6 +59,7 @@ class Inmate(models.Model):
     # 5000 since an unlimited number need to be supported
     aliases = models.CharField(max_length=5000, **NULLS)
 
+    mugshot = models.ImageField(verbose_name='mug shot', **NULLS)
     gang = models.ForeignKey(Gang, **NULLS)
 
     sex = models.CharField(max_length=30, **NULLS)
