@@ -5,11 +5,33 @@
 # have to be manually restarted because changes will not be noticed
 # immediately.
 
-DEBUG = True
+# from inmates.jims_init import init_jims
 
-# Make these unique, and don't share it with anybody.
 SECRET_KEY = "6@6x4y$jd@jq6(-t9t#tqq6&jgg93bi128%+0%8m2tj5-p3+$g"
 NEVERCACHE_KEY = "m2v1wk(=mw#5cu5)erl-^(3zgz%rh)lb(b8e0er6#i#m559e^0"
+
+DEBUG = True
+INITIAL_BUILD = True
+
+#
+# BLOCKS_PER_PRISON= 10
+# CELLS_PER_BLOCK = 100
+# PRISONS = [
+#     ("San Diego Central Jail", "(619) 610-1647"),
+#     ("Las Colinas Detention & Reentry Facility", "(619) 402-1312"),
+#     ("Vista Detention Facility", "(760) 936-0014"),
+#     ("George Bailey Detention Facility", "(619) 210-0385"),
+#     ("South Bay Detention Facility", "(619) 213-1433"),
+#     ("East Mesa Reentry Facility", "(619) 210-0334"),
+#     ("Facility 8 Detention Facility", "(619) 210-0327")
+# ]
+#
+# if INITIAL_BUILD:
+#     init_jims(PRISONS, BLOCKS_PER_PRISON, CELLS_PER_BLOCK)
+#
+
+# Make these unique, and don't share it with anybody.
+
 
 DATABASES = {
     "default": {
@@ -27,6 +49,9 @@ DATABASES = {
         "PORT": "",
     }
 }
+
+
+
 
 ###################
 # DEPLOY SETTINGS #
