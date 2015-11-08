@@ -47,6 +47,12 @@ class Gang(models.Model):
         return "{}".format(self.name)
 
 
+class Officer(models.Model):
+    first_name = models.CharField(max_length=100, **NULLS)
+    last_name = models.CharField(max_length=100, **NULLS)
+    badge_number = models.IntegerField(**NULLS)
+
+
 class Inmate(models.Model):
     # Name & Basic info
     first_name = models.CharField(max_length=100)

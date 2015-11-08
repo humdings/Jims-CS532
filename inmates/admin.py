@@ -7,7 +7,8 @@ from .models import (
     Gang,
     PrisonFacility,
     CellBlock,
-    PrisonCell
+    PrisonCell,
+    Officer
 )
 
 # class InmateAdmin(admin.ModelAdmin):
@@ -17,3 +18,4 @@ admin.site.register(Gang)
 admin.site.register(PrisonFacility)
 admin.site.register(CellBlock)
 admin.site.register(PrisonCell)
+admin.site.register(Officer)
