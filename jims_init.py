@@ -1,20 +1,24 @@
 
 
 # from jail_system.local_settings import PRISONS, BLOCKS_PER_PRISON, CELLS_PER_BLOCK
+import numpy as np
+import datetime
 
 
 from inmates.models import (
     PrisonFacility,
     CellBlock,
-    PrisonCell
+    PrisonCell,
+    Gang,
+    Inmate,
 )
 
 DEBUG = True
 INITIAL_BUILD = True
 
 
-BLOCKS_PER_PRISON= 10
-CELLS_PER_BLOCK = 100
+BLOCKS_PER_PRISON = 3
+CELLS_PER_BLOCK = 30
 
 PRISONS = [
     ("San Diego Central Jail", "(619) 610-1647"),
@@ -42,7 +46,7 @@ first_names = ['Jean', 'Erica', 'Clayton', 'Grace', 'Iris', 'Barry', 'Ebony', 'L
                'Marguerite', 'Rochelle', 'Katrina', 'Jaime', 'Dawn', 'Pam', 'Paula', 'Elsie', 'Max', 'Loretta',
                'Nora', 'Tonya', 'Natalie']
 
-last_names = [['Austin', 'Mckinney', 'Maldonado', 'Ramirez', 'Hines', 'Becker', 'Duncan', 'Riley', 'Garza', 'Cortez',
+last_names = ['Austin', 'Mckinney', 'Maldonado', 'Ramirez', 'Hines', 'Becker', 'Duncan', 'Riley', 'Garza', 'Cortez',
                'Allison', 'Stevens', 'Howard', 'Douglas', 'Curtis', 'Daniels', 'Hammond', 'Turner', 'Harper', 'Lee',
                'Robertson', 'Hughes', 'Patterson', 'Cook', 'Bell', 'Bryant', 'Long', 'Alexander', 'Thomas', 'Bowers',
                'Edwards', 'Alvarado', 'Stephens', 'Boone', 'Webster', 'White', 'Dawson', 'Goodman', 'Bowen', 'Malone',
@@ -51,27 +55,74 @@ last_names = [['Austin', 'Mckinney', 'Maldonado', 'Ramirez', 'Hines', 'Becker', 
                'Casey', 'Reid', 'Castro', 'Hicks', 'Quinn', 'Watts', 'Beck', 'Oliver', 'Gonzalez', 'Evans', 'Hale',
                'Saunders', 'Mccarthy', 'Russell', 'Walsh', 'Holloway', 'Carpenter', 'Little', 'Johnston', 'Pratt',
                'Conner', 'Fernandez', 'Lambert', 'Sims', 'Patton', 'Rios', 'Hardy', 'Warren', 'Rowe', 'Shelton',
-               'Mitchell', 'Thornton', 'Harrington', 'Underwood', 'George', 'Elliott', 'Farmer', 'Cole', 'Mcguire', 'Medina']]
+               'Mitchell', 'Thornton', 'Harrington', 'Underwood', 'George', 'Elliott', 'Farmer', 'Cole', 'Mcguire', 'Medina']
 
 
-def init_jims(prison_tuples, blocks_per_prison, cells_per_block):
+
+GANGS = [None, 'Bloods', 'Crypts', 'Republican', 'Democrat']
+
+
+def init_jims(prison_tuples=PRISONS,
+              blocks_per_prison=BLOCKS_PER_PRISON,
+              cells_per_block=CELLS_PER_BLOCK,
+              gangs=GANGS):
     facilities = [PrisonFacility(name=name, phone_number=phone_number)
                   for name, phone_number in prison_tuples]
-    for obj in facilities:
-        obj.save()
+    for facility in facilities:
+        facility.save()
     cell_blocks = [CellBlock(facility=facility, block_number=block_number)
                    for block_number in xrange(blocks_per_prison)
                    for facility in facilities]
-    for obj in cell_blocks:
-        obj.save()
+    for block in cell_blocks:
+        block.save()
     cells = [PrisonCell(cell_block=cell_block, cell_number=cell_number)
              for cell_number in xrange(cells_per_block)
              for cell_block in cell_blocks]
     for cell in cells:
         cell.save()
+    gangs = [Gang(name=name) for name in gangs]
+    for gang in gangs:
+        gang.save()
+
+    capacity = 2 * len(cells)
+
+    pct_capacity = abs(np.random.normal(loc=0.5, scale=0.5))
+    inmate_count = int(pct_capacity * capacity)
+    a_bunks = inmate_count // 2
+    b_bunks = inmate_count - a_bunks
+    a_cells = np.random.choice(cells, size=a_bunks)
+    b_cells = np.random.choice(cells, size=a_bunks)
+    for cell in a_cells:
+        inmate = new_inmate(cell, np.random.choice((gangs)))
+        inmate.save()
+        # cell.bunk_a = inmate
+        # cell.save()
+    for cell in b_cells:
+        inmate = new_inmate(cell, np.random.choice((gangs)))
+        inmate.save()
+        # cell.bunk_b = inmate
+        # cell.save()
 
 
-def random_names(n):pass
+def random_bday(min_age=18, max_age=60):
+    low = min_age * 365
+    high = max_age * 365
+    age = np.random.randint(low, high)
+    today = datetime.datetime.today().date()
+    return today - datetime.timedelta(days=age)
 
+def social():
+    return np.random.randint(100000000, 999999999)
 
+def new_inmate(cell, gang):
+    return Inmate(
+        first_name=np.random.choice(first_names),
+        last_name=np.random.choice(last_names),
+        social_secutity_number=social(),
+        release_date=datetime.datetime.now() + datetime.timedelta(days=np.random.randint(1, 1000)),
+        birth_date=random_bday(),
+        gang=gang,
+        prison_cell=cell)
 
+if __name__ == '__main__':
+    print('hi')

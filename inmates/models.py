@@ -1,5 +1,6 @@
 from django.db import models
 import datetime
+import pandas as pd
 
 NULLS = dict(blank=True, null=True)
 
@@ -12,7 +13,7 @@ class PrisonFacility(models.Model):
     phone_number = models.CharField(max_length=100, **NULLS)
 
     def __unicode__(self):
-        return "{}".format(self.name)
+        return str(self.name)
 
 
 class CellBlock(models.Model):
@@ -27,8 +28,7 @@ class CellBlock(models.Model):
 class PrisonCell(models.Model):
     cell_block = models.ForeignKey(CellBlock, **NULLS)
     cell_number = models.IntegerField(**NULLS)
-    bunk_a = models.ManyToManyField("Inmate", related_name="bunk_a", **NULLS)
-    bunk_b = models.ManyToManyField("Inmate", related_name="bunk_b", **NULLS)
+
 
     def __unicode__(self):
         return "<Cell: {}, block: {}, facility: {}>".format(
@@ -41,7 +41,6 @@ class PrisonCell(models.Model):
 class Gang(models.Model):
     name = models.CharField(max_length=100, **NULLS)
     rivals = models.ForeignKey('self', **NULLS)
-    cell_blocks = models.ManyToManyField(CellBlock, **NULLS)
 
     def __unicode__(self):
         return "{}".format(self.name)
@@ -52,6 +51,13 @@ class Officer(models.Model):
     last_name = models.CharField(max_length=100, **NULLS)
     badge_number = models.IntegerField(**NULLS)
 
+    def __unicode__(self):
+        return "Officer {} {}".format(self.first_name, self.last_name)
+
+
+
+
+
 
 class Inmate(models.Model):
     # Name & Basic info
@@ -59,7 +65,7 @@ class Inmate(models.Model):
     last_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=100, **NULLS)
     social_secutity_number = models.IntegerField(**NULLS)
-
+    arresting_officer = models.ForeignKey(Officer, **NULLS)
     release_date = models.DateField(**NULLS)
 
     # 5000 since an unlimited number need to be supported
@@ -71,6 +77,7 @@ class Inmate(models.Model):
     sex = models.CharField(max_length=30, **NULLS)
     birth_date = models.DateField(**NULLS)
 
+    prison_cell = models.ForeignKey(PrisonCell, **NULLS)
     # Address Fields
     phone_number = models.CharField(max_length=30, **NULLS)
     alt_phone_number = models.CharField(max_length=30, **NULLS)
@@ -93,9 +100,26 @@ class Inmate(models.Model):
     scars_marks_tattoos = models.TextField(**NULLS)
     medical_info = models.TextField(**NULLS)
 
+
+
+
+
     def __unicode__(self):
-        return "{}, {}, inmate id: {}".format(self.last_name, self.first_name, str(self.id))
+        return "inmate: {}".format(str(self.id))
 
     def time_to_release(self):
+        if self.release_date is None:
+            return
         now = datetime.datetime.now()
-        return self.release_date - now
+        return pd.Timestamp(self.release_date) - now
+
+
+class MedicalRecord(models.Model):
+    inmate = models.OneToOneField(Inmate)
+    medical_file = models.FileField(**NULLS)
+
+class FinancialRecord(models.Model):
+    inmate = models.OneToOneField(Inmate)
+    financial_file = models.FileField(**NULLS)
+
+
