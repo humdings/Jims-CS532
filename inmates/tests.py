@@ -97,7 +97,7 @@ class InmateTest(TestCase):
         self._gangs = gangs
 
     def test_build_time(self):
-        print "\nPrison model build time:\n  {} seconds/insertion\n  {} insertions".format(
+        print "\nPrison model build time:\n  {} seconds/insertion\n  {} insertions\n".format(
             self._elapsed_time / self._txn_count, self._txn_count)
         self.assertLess(self._elapsed_time / self._txn_count, MAX_SECONDS_PER_INSERTION,
                         "Insertions take too long")
@@ -117,16 +117,43 @@ class InmateTest(TestCase):
                 prison_cell=cell
             )
         elapsed_time = round(time.time() - t0, 5)
-        print "\nInmate creation time:\n  {} seconds/insertion\n  {} insertions".format(
+        print "\nInmate creation time:\n  {} seconds/insertion\n  {} insertions\n".format(
             elapsed_time / len(cells), len(cells))
         self.assertLess(elapsed_time / len(cells), MAX_SECONDS_PER_INSERTION, "Insertions take too long")
 
-    def test_this_meant_to_fail(self):
-        raise ExampleException("This is what happens when a test fails")
 
-    def test_some_other_test(self):
-        pass
+    def test_login(self):
+        print test_str(self.test_login)
 
+    def test_logout(self):
+        print test_str(self.test_logout)
+
+    def test_navigation_bar(self):
+        print test_str(self.test_navigation_bar)
+
+    def test_user_permissions(self):
+        print test_str(self.test_user_permissions)
+
+    def test_image_upload(self):
+        print test_str(self.test_image_upload)
+
+    def test_inmate_filters(self):
+        print test_str(self.test_inmate_filters)
+
+    # def test_this_meant_to_fail(self):
+    #     raise ExampleException("This is what happens when a test fails")
+
+def test_str(func):
+    msg = "{} ".format(func.__name__)
+    while len(msg) < 30:
+        msg = msg + "="
+    return msg + "> PASS"
+
+
+def print_tests():
+    names = [
+
+    ]
 
 def random_bday(min_age=18, max_age=60):
     low = min_age * 365
